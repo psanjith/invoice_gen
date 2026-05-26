@@ -70,19 +70,17 @@ function vline(pdf: jsPDF, x: number, y1: number, y2: number) {
   pdf.line(x, y1, x, y2);
 }
 
-function drawSignature(pdf: jsPDF, x: number, y: number) {
-  pdf.setDrawColor(52, 78, 166);
-  pdf.setLineWidth(1.2);
-  const pts = [
-    [0, 10], [8, 2], [16, 12], [23, 7], [31, 14],
-    [39, 4], [49, 12], [60, 6], [72, 11],
-  ] as const;
-  for (let i = 0; i < pts.length - 1; i++) {
-    pdf.line(x + pts[i][0], y + pts[i][1], x + pts[i + 1][0], y + pts[i + 1][1]);
-  }
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
-export function exportInvoiceToPdf(invoice: Invoice): void {
+export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
+  const sigImg = await loadImage('/signature.jpg').catch(() => null);
   const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
   const PW = pdf.internal.pageSize.getWidth();
   const PH = pdf.internal.pageSize.getHeight();
@@ -355,7 +353,11 @@ export function exportInvoiceToPdf(invoice: Invoice): void {
   // ── SIGNATURE ─────────────────────────────────────────────────────────────
   const sigY = totY + 62;
   hline(pdf, ix, sigY, ix + iW);
-  drawSignature(pdf, ix + 22, sigY + 28);
+  if (sigImg) {
+    const sigW = 120;
+    const sigH = sigW * (sigImg.naturalHeight / sigImg.naturalWidth);
+    pdf.addImage(sigImg, 'JPEG', ix + 8, sigY + 4, sigW, sigH);
+  }
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);
   pdf.setTextColor(20, 20, 20);

@@ -219,7 +219,7 @@ function App() {
   }
 
   function exportPdf() {
-    exportInvoiceToPdf(draft);
+    void exportInvoiceToPdf(draft);
     setStatus('PDF export started.');
   }
 

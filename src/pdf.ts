@@ -356,22 +356,26 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   // ── SIGNATURE ─────────────────────────────────────────────────────────────
   const sigY = totY + 62;
   hline(pdf, ix, sigY, ix + iW);
+
+  const boxBottom = my + H - 4;
+  const available = boxBottom - sigY;
+
   if (sigImg) {
-    const maxW = 90;
-    const maxH = 52;
+    const maxSigH = available - 16;
     const ratio = sigImg.naturalWidth / sigImg.naturalHeight;
-    let sigW = maxW;
-    let sigH = sigW / ratio;
-    if (sigH > maxH) {
-      sigH = maxH;
-      sigW = sigH * ratio;
+    let sigH = Math.min(maxSigH, 50);
+    let sigW = sigH * ratio;
+    if (sigW > 90) {
+      sigW = 90;
+      sigH = sigW / ratio;
     }
-    pdf.addImage(sigImg, 'PNG', ix + 8, sigY + 6, sigW, sigH);
+    pdf.addImage(sigImg, 'PNG', ix + 8, sigY + 4, sigW, sigH);
   }
+
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);
   pdf.setTextColor(20, 20, 20);
-  pdf.text("Contractor's signature", ix + 2, sigY + 82);
+  pdf.text("Contractor's signature", ix + 2, boxBottom - 2);
 
   pdf.save(`${invoice.invoiceNumber}.pdf`);
 }

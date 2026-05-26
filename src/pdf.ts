@@ -183,7 +183,7 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
 
   // ── ROW 6: Project Name | Project # | Invoice Period ────────────────────
   y += r5H;
-  const r6H = 95;
+  const r6H = 75;
   const c1 = ix;
   const c2 = ix + iW * 0.34;
   const c3 = ix + iW * 0.53;

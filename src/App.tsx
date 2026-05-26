@@ -30,12 +30,12 @@ function generateEntries(from: string, to: string, existing: DayEntry[]): DayEnt
   return result;
 }
 
-function createBlankInvoice(): Invoice {
+function createBlankInvoice(invoiceNumber = ''): Invoice {
   const now = new Date().toISOString();
   const today = now.slice(0, 10);
   return {
     id: newId(),
-    invoiceNumber: nextInvoiceNumber(),
+    invoiceNumber,
     invoiceDate: today,
     clientInfo: '',
     phaseCode: '',
@@ -69,7 +69,7 @@ function fmtCurrency(value: number): string {
 function App() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [activeId, setActiveId] = useState('');
-  const [draft, setDraft] = useState<Invoice>(() => createBlankInvoice());
+  const [draft, setDraft] = useState<Invoice>(() => createBlankInvoice(''));
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('Loading saved invoices.');
   const [isLoading, setIsLoading] = useState(true);
@@ -84,6 +84,7 @@ function App() {
         setDraft(cloneInvoice(loaded[0]));
         setStatus('Ready.');
       } else {
+        setDraft(createBlankInvoice(nextInvoiceNumber()));
         setStatus('Ready — create your first invoice.');
       }
       setIsLoading(false);
@@ -163,7 +164,7 @@ function App() {
   }
 
   function newInvoice() {
-    setDraft(createBlankInvoice());
+    setDraft(createBlankInvoice(nextInvoiceNumber()));
     setActiveId('');
     setStatus('New invoice started.');
   }

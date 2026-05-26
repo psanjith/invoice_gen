@@ -107,8 +107,9 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   pdf.setTextColor(15, 15, 15);
   pdf.text('INVOICE', ix + iW / 2, iy + 22, { align: 'center' });
 
-  const half = iW / 2;
-  const splitX = ix + half;
+  const leftW = iW * 0.44;
+  const splitX = ix + leftW;
+  const rightW = iW - leftW;
 
   // ── ROW 1: Company Name | Invoice Date ──────────────────────────────────
   let y = iy + hdrH;
@@ -120,9 +121,9 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   body(pdf, COMPANY_NAME, ix + 2, y + 26);
 
   label(pdf, 'Invoice Date', splitX + 2, y + 11);
-  const bw1 = half * 0.72;
+  const bw1 = rightW * 0.72;
   const bh1 = r1H - 20;
-  yellowBox(pdf, splitX + half - bw1 - 4, y + 18, bw1, bh1, fmtDate(invoice.invoiceDate));
+  yellowBox(pdf, ix + iW - bw1 - 4, y + 18, bw1, bh1, fmtDate(invoice.invoiceDate));
 
   // ── ROW 2: Personal Name | Invoice # ────────────────────────────────────
   y += r1H;
@@ -134,9 +135,9 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   body(pdf, PERSONAL_NAME, ix + 2, y + 26);
 
   label(pdf, 'Invoice #', splitX + 2, y + 11);
-  const bw2 = half * 0.72;
+  const bw2 = rightW * 0.72;
   const bh2 = r2H - 20;
-  yellowBox(pdf, splitX + half - bw2 - 4, y + 18, bw2, bh2, invoice.invoiceNumber);
+  yellowBox(pdf, ix + iW - bw2 - 4, y + 18, bw2, bh2, invoice.invoiceNumber);
 
   // ── ROW 3: Company Address | To: ────────────────────────────────────────
   y += r2H;
@@ -149,7 +150,7 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
 
   const toX = splitX + 7;
   const toY = y + 8;
-  const toW = half - 14;
+  const toW = rightW - 14;
   label(pdf, 'To:', splitX + 2, y + 12);
   if (invoice.clientInfo) {
     pdf.setFont('helvetica', 'normal');

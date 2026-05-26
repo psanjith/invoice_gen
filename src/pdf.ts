@@ -333,7 +333,9 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   hline(pdf, totStartX, totY + 20, totEndX);
   hline(pdf, totStartX, totY + 40, totEndX);
   hline(pdf, totStartX, totY + 60, totEndX);
+  vline(pdf, totStartX, totY, totY + 60);
   vline(pdf, totDivX, totY, totY + 60);
+  vline(pdf, totEndX, totY, totY + 60);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(10);

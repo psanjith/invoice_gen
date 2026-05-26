@@ -80,7 +80,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
-  const sigImg = await loadImage('/signature.jpg').catch(() => null);
+  const sigImg = await loadImage('/signature.png').catch(() => null);
   const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
   const PW = pdf.internal.pageSize.getWidth();
   const PH = pdf.internal.pageSize.getHeight();
@@ -359,7 +359,7 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   if (sigImg) {
     const sigW = 120;
     const sigH = sigW * (sigImg.naturalHeight / sigImg.naturalWidth);
-    pdf.addImage(sigImg, 'JPEG', ix + 8, sigY + 4, sigW, sigH);
+    pdf.addImage(sigImg, 'PNG', ix + 8, sigY + 4, sigW, sigH);
   }
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);

@@ -304,10 +304,8 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
     pdf.text(String(entry.hours), cx.hrs, ry, { align: 'center' });
     pdf.setTextColor(20, 20, 20);
 
-    if (invoice.hourlyRate > 0) {
+    if (entry.hours > 0 && invoice.hourlyRate > 0) {
       pdf.text(`$${fmtMoney(invoice.hourlyRate)}`, cx.rate, ry, { align: 'center' });
-    } else {
-      pdf.text('$', tX + dateW + descW + hrsW + 6, ry);
     }
 
     pdf.text(`$${fmtMoney(loa)}`, cx.loa, ry, { align: 'center' });

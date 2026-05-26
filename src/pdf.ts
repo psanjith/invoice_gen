@@ -357,9 +357,16 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   const sigY = totY + 62;
   hline(pdf, ix, sigY, ix + iW);
   if (sigImg) {
-    const sigW = 120;
-    const sigH = sigW * (sigImg.naturalHeight / sigImg.naturalWidth);
-    pdf.addImage(sigImg, 'PNG', ix + 8, sigY + 4, sigW, sigH);
+    const maxW = 90;
+    const maxH = 52;
+    const ratio = sigImg.naturalWidth / sigImg.naturalHeight;
+    let sigW = maxW;
+    let sigH = sigW / ratio;
+    if (sigH > maxH) {
+      sigH = maxH;
+      sigW = sigH * ratio;
+    }
+    pdf.addImage(sigImg, 'PNG', ix + 8, sigY + 6, sigW, sigH);
   }
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);

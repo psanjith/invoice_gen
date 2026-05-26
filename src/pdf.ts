@@ -360,22 +360,19 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   const boxBottom = my + H - 4;
   const available = boxBottom - sigY;
 
+  const labelY = boxBottom - 4;
+  const ratio = sigImg ? sigImg.naturalWidth / sigImg.naturalHeight : 1;
+  const sigH = Math.min(30, available - 18);
+  const sigW = Math.min(70, sigH * ratio);
+
   if (sigImg) {
-    const maxSigH = available - 16;
-    const ratio = sigImg.naturalWidth / sigImg.naturalHeight;
-    let sigH = Math.min(maxSigH, 50);
-    let sigW = sigH * ratio;
-    if (sigW > 90) {
-      sigW = 90;
-      sigH = sigW / ratio;
-    }
-    pdf.addImage(sigImg, 'PNG', ix + 8, sigY + 4, sigW, sigH);
+    pdf.addImage(sigImg, 'PNG', ix + 8, labelY - 12 - sigH, sigW, sigH);
   }
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(9.5);
   pdf.setTextColor(20, 20, 20);
-  pdf.text("Contractor's signature", ix + 2, boxBottom - 2);
+  pdf.text("Contractor's signature", ix + 2, labelY);
 
   pdf.save(`${invoice.invoiceNumber}.pdf`);
 }

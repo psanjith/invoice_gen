@@ -84,7 +84,7 @@ function App() {
         setDraft(cloneInvoice(loaded[0]));
         setStatus('Ready.');
       } else {
-        setDraft(createBlankInvoice(nextInvoiceNumber()));
+        setDraft(createBlankInvoice(nextInvoiceNumber(loaded)));
         setStatus('Ready — create your first invoice.');
       }
       setIsLoading(false);
@@ -164,7 +164,7 @@ function App() {
   }
 
   function newInvoice() {
-    setDraft(createBlankInvoice(nextInvoiceNumber()));
+    setDraft(createBlankInvoice(nextInvoiceNumber(invoices)));
     setActiveId('');
     setStatus('New invoice started.');
   }
@@ -189,7 +189,7 @@ function App() {
     const inv = invoices.find((i) => i.id === id);
     if (!inv) return;
     setStatus('Duplicating…');
-    void duplicateInvoice(inv)
+    void duplicateInvoice(inv, nextInvoiceNumber(invoices))
       .then((copy) => {
         setInvoices((cur) => [copy, ...cur]);
         setActiveId(copy.id);

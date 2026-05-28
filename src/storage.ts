@@ -3,7 +3,6 @@ import { Invoice } from './types';
 
 const STORAGE_KEY = 'selva-invoices-v1';
 const SUPABASE_TABLE = 'selva_invoices';
-const COUNTER_KEY = 'selva-invoice-counter-v1';
 
 type InvoiceRecord = {
   id: string;
@@ -84,12 +83,12 @@ export async function removeInvoice(invoiceId: string): Promise<void> {
   await deleteRemoteInvoice(invoiceId);
 }
 
-export async function duplicateInvoice(invoice: Invoice): Promise<Invoice> {
+export async function duplicateInvoice(invoice: Invoice, invoiceNumber: string): Promise<Invoice> {
   const now = new Date().toISOString();
   const copy: Invoice = {
     ...cloneInvoice(invoice),
     id: crypto.randomUUID(),
-    invoiceNumber: nextInvoiceNumber(),
+    invoiceNumber,
     createdAt: now,
     updatedAt: now,
   };
@@ -97,13 +96,12 @@ export async function duplicateInvoice(invoice: Invoice): Promise<Invoice> {
   return copy;
 }
 
-export function nextInvoiceNumber(): string {
-  const raw =
-    (typeof window !== 'undefined' ? window.localStorage.getItem(COUNTER_KEY) : null) ?? '0';
-  const next = parseInt(raw, 10) + 1;
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(COUNTER_KEY, String(next));
-  }
+export function nextInvoiceNumber(existing: Invoice[]): string {
+  const maxSeq = existing.reduce((max, inv) => {
+    const match = inv.invoiceNumber.match(/(\d+)$/);
+    return match ? Math.max(max, parseInt(match[1], 10)) : max;
+  }, 0);
+  const next = maxSeq + 1;
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');

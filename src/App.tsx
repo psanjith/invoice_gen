@@ -71,8 +71,9 @@ function App() {
   const [activeId, setActiveId] = useState('');
   const [draft, setDraft] = useState<Invoice>(() => createBlankInvoice(''));
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('Loading saved invoices.');
+  const [status, setStatus] = useState('Loading…');
   const [isLoading, setIsLoading] = useState(true);
+  const [mobileView, setMobileView] = useState<'list' | 'form'>('list');
 
   useEffect(() => {
     let cancelled = false;
@@ -89,9 +90,7 @@ function App() {
       }
       setIsLoading(false);
     });
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const sortedInvoices = useMemo(
@@ -104,9 +103,7 @@ function App() {
     if (!q) return sortedInvoices;
     return sortedInvoices.filter((inv) =>
       [inv.invoiceNumber, inv.clientInfo, inv.projectName, inv.projectNumber]
-        .join(' ')
-        .toLowerCase()
-        .includes(q),
+        .join(' ').toLowerCase().includes(q),
     );
   }, [search, sortedInvoices]);
 
@@ -147,12 +144,10 @@ function App() {
   }
 
   function updateEntry(index: number, field: keyof DayEntry, value: string | number) {
-    setDraft((cur) => {
-      const entries = cur.entries.map((e, i) =>
-        i === index ? { ...e, [field]: value } : e,
-      );
-      return { ...cur, entries };
-    });
+    setDraft((cur) => ({
+      ...cur,
+      entries: cur.entries.map((e, i) => i === index ? { ...e, [field]: value } : e),
+    }));
   }
 
   function loadInvoice(id: string) {
@@ -161,12 +156,14 @@ function App() {
     setActiveId(id);
     setDraft(cloneInvoice(inv));
     setStatus(`Loaded ${inv.invoiceNumber}.`);
+    setMobileView('form');
   }
 
   function newInvoice() {
     setDraft(createBlankInvoice(nextInvoiceNumber(invoices)));
     setActiveId('');
     setStatus('New invoice started.');
+    setMobileView('form');
   }
 
   function saveCurrentInvoice() {
@@ -182,7 +179,7 @@ function App() {
         setActiveId(next.id);
         setStatus('Saved.');
       })
-      .catch(() => setStatus('Save failed. Check connection.'));
+      .catch(() => setStatus('Save failed.'));
   }
 
   function duplicateSaved(id: string) {
@@ -195,6 +192,7 @@ function App() {
         setActiveId(copy.id);
         setDraft(cloneInvoice(copy));
         setStatus('Duplicated.');
+        setMobileView('form');
       })
       .catch(() => setStatus('Duplicate failed.'));
   }
@@ -211,10 +209,11 @@ function App() {
             setDraft(cloneInvoice(next[0]));
           } else {
             setActiveId('');
-            setDraft(createBlankInvoice());
+            setDraft(createBlankInvoice(nextInvoiceNumber(next)));
           }
         }
         setStatus('Deleted.');
+        setMobileView('list');
       })
       .catch(() => setStatus('Delete failed.'));
   }
@@ -224,79 +223,199 @@ function App() {
     setStatus('PDF export started.');
   }
 
-  return (
-    <div className="shell">
-      {/* ── SIDEBAR ── */}
-      <aside className="sidebar">
+  const formContent = (
+    <form className="editor-card" onSubmit={(e) => e.preventDefault()}>
+      <h3 className="section-heading">Invoice details</h3>
+      <div className="field-grid">
+        <label>
+          Invoice number
+          <input value={draft.invoiceNumber} onChange={onInput('invoiceNumber')} />
+        </label>
+        <label>
+          Invoice date
+          <input type="date" value={draft.invoiceDate} onChange={onInput('invoiceDate')} />
+        </label>
+        <label className="span-2">
+          Client / Recipient (To:)
+          <textarea
+            value={draft.clientInfo}
+            onChange={onInput('clientInfo')}
+            rows={3}
+            placeholder={'Bird LNG Constructors Limited\n102, 17007-107 Ave\nEdmonton, AB, T5S 1G3'}
+          />
+        </label>
+        <label>
+          Project name
+          <input value={draft.projectName} onChange={onInput('projectName')} placeholder="Woodfibre LNG Project" />
+        </label>
+        <label>
+          Project #
+          <input value={draft.projectNumber} onChange={onInput('projectNumber')} placeholder="71055" />
+        </label>
+        <label>
+          Phase code
+          <input value={draft.phaseCode} onChange={onInput('phaseCode')} placeholder="00.00.12.00.0000" />
+        </label>
+        <label>
+          Hourly rate ($)
+          <input type="number" min="0" step="0.01" value={draft.hourlyRate} onChange={onNumberInput('hourlyRate')} />
+        </label>
+        <label>
+          LOA / day ($)
+          <input type="number" min="0" step="0.01" value={draft.loaPerDay} onChange={onNumberInput('loaPerDay')} />
+        </label>
+        <label>
+          GST rate
+          <select value={draft.gstRate} onChange={onNumberInput('gstRate')}>
+            <option value={0}>0% (no GST)</option>
+            <option value={0.05}>5% (GST)</option>
+          </select>
+        </label>
+      </div>
+
+      <div className="period-header">
         <div>
-          <p className="eyebrow">Selva Invoices</p>
-          <h1>Fast invoice generation.</h1>
-          <p className="sidebar-copy">
-            Fill in the yellow fields, enter daily hours, save, and export a ready-to-send PDF.
-          </p>
+          <h3>Hours by day</h3>
+          <p>Set dates — rows generate automatically.</p>
         </div>
+        <div className="period-dates">
+          <label>
+            From
+            <input type="date" value={draft.periodFrom} onChange={(e) => updatePeriod('periodFrom', e.target.value)} />
+          </label>
+          <label>
+            To
+            <input type="date" value={draft.periodTo} onChange={(e) => updatePeriod('periodTo', e.target.value)} />
+          </label>
+        </div>
+      </div>
 
-        <button className="primary-button" onClick={newInvoice} type="button">
-          + New invoice
-        </button>
+      <div className="entries-wrap">
+        <table className="entries-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Hrs</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {draft.entries.map((entry, i) => {
+              const loa = entry.hours > 0 ? draft.loaPerDay : 0;
+              const amt = entry.hours * draft.hourlyRate + loa;
+              return (
+                <tr key={entry.date} className={entry.hours === 0 ? 'zero-row' : ''}>
+                  <td className="date-cell">{fmtDisplayDate(entry.date)}</td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={entry.hours}
+                      onChange={(e) => updateEntry(i, 'hours', Number(e.target.value))}
+                    />
+                  </td>
+                  <td className="amt-cell">{amt > 0 ? fmtCurrency(amt) : '—'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr className="entries-total-row">
+              <td>Total</td>
+              <td>{totalHours} hrs</td>
+              <td className="amt-cell">{fmtCurrency(subtotal)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-        <div className="summary-card">
-          <span>Saved invoices</span>
-          <strong>{invoices.length}</strong>
-          <small>{isLoading ? 'Loading…' : status}</small>
+      <div className="totals-block">
+        <div className="totals-row">
+          <span>Subtotal</span>
+          <strong>{fmtCurrency(subtotal)}</strong>
+        </div>
+        <div className="totals-row">
+          <span>GST ({(draft.gstRate * 100).toFixed(0)}%)</span>
+          <strong>{fmtCurrency(gst)}</strong>
+        </div>
+        <div className="totals-row total-row">
+          <span>Total</span>
+          <strong>{fmtCurrency(total)}</strong>
+        </div>
+      </div>
+    </form>
+  );
+
+  return (
+    <div className={`shell mobile-${mobileView}`}>
+
+      {/* ── SIDEBAR / LIST VIEW ── */}
+      <aside className="sidebar">
+        <div className="sidebar-top">
+          <div>
+            <p className="eyebrow">Selva Invoices</p>
+            <p className="sidebar-status">{isLoading ? 'Loading…' : status}</p>
+          </div>
+          <button className="primary-button new-btn" onClick={newInvoice} type="button">
+            + New
+          </button>
         </div>
 
         <label className="search-field">
-          Search
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Invoice #, client, project…"
-          />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search invoices…" />
         </label>
 
-        {!activeId && (
-          <div className="summary-card draft-card">
-            <span>Unsaved draft</span>
-            <small>Click Save to store this invoice.</small>
-          </div>
-        )}
-
         <div className="saved-list">
-          {filteredInvoices.map((inv) => (
-            <div
-              key={inv.id}
-              className={inv.id === activeId ? 'saved-item active' : 'saved-item'}
-            >
-              <button className="saved-item-main" onClick={() => loadInvoice(inv.id)} type="button">
-                <strong>{inv.invoiceNumber}</strong>
-                <span>{inv.projectName || 'No project'}</span>
-                <small>{inv.clientInfo.split('\n')[0] || 'No client'}</small>
-              </button>
-              <div className="saved-item-actions">
-                <button type="button" onClick={() => duplicateSaved(inv.id)}>
-                  Duplicate
+          {filteredInvoices.map((inv) => {
+            const invTotal = inv.entries.reduce((s, e) => {
+              const loa = e.hours > 0 ? inv.loaPerDay : 0;
+              return s + e.hours * inv.hourlyRate + loa;
+            }, 0);
+            return (
+              <div key={inv.id} className={inv.id === activeId ? 'saved-item active' : 'saved-item'}>
+                <button className="saved-item-main" onClick={() => loadInvoice(inv.id)} type="button">
+                  <div className="saved-item-row">
+                    <strong>{inv.invoiceNumber}</strong>
+                    <span className="saved-item-amount">{fmtCurrency(invTotal)}</span>
+                  </div>
+                  <span>{inv.projectName || 'No project'}</span>
+                  <small>{inv.clientInfo.split('\n')[0] || 'No client'}</small>
                 </button>
-                <button type="button" onClick={() => deleteSaved(inv.id)}>
-                  Delete
-                </button>
+                <div className="saved-item-actions">
+                  <button type="button" onClick={() => duplicateSaved(inv.id)}>Copy</button>
+                  <button type="button" onClick={() => deleteSaved(inv.id)}>Delete</button>
+                </div>
               </div>
-            </div>
-          ))}
-          {filteredInvoices.length === 0 && (
-            <div className="summary-card draft-card">
-              <span>No invoices match your search.</span>
+            );
+          })}
+          {filteredInvoices.length === 0 && !isLoading && (
+            <div className="empty-state">
+              <p>No invoices yet.</p>
+              <button className="primary-button" onClick={newInvoice} type="button">
+                Create your first invoice
+              </button>
             </div>
           )}
         </div>
       </aside>
 
-      {/* ── WORKSPACE ── */}
+      {/* ── WORKSPACE / FORM VIEW ── */}
       <main className="workspace">
+
+        {/* Mobile top bar */}
+        <div className="mobile-topbar">
+          <button className="back-btn" onClick={() => setMobileView('list')} type="button">
+            ← Invoices
+          </button>
+          <span className="mobile-invoice-num">{draft.invoiceNumber || 'New invoice'}</span>
+        </div>
+
+        {/* Desktop hero */}
         <section className="hero-panel">
           <div>
             <p className="eyebrow">Current invoice</p>
-            <h2>{draft.invoiceNumber}</h2>
+            <h2>{draft.invoiceNumber || 'New invoice'}</h2>
             <p>
               {draft.periodFrom && draft.periodTo
                 ? `${fmtDisplayDate(draft.periodFrom)} → ${fmtDisplayDate(draft.periodTo)}`
@@ -304,225 +423,50 @@ function App() {
             </p>
           </div>
           <div className="hero-actions">
-            <button className="secondary-button" onClick={saveCurrentInvoice} type="button">
-              Save
-            </button>
-            <button className="primary-button" onClick={exportPdf} type="button">
-              Export PDF
-            </button>
+            <button className="secondary-button" onClick={saveCurrentInvoice} type="button">Save</button>
+            <button className="primary-button" onClick={exportPdf} type="button">Export PDF</button>
           </div>
         </section>
 
         <section className="content-grid">
-          {/* ── FORM ── */}
-          <form className="editor-card" onSubmit={(e) => e.preventDefault()}>
-            <h3 className="section-heading">Invoice details</h3>
+          {formContent}
 
-            <div className="field-grid">
-              <label>
-                Invoice number
-                <input value={draft.invoiceNumber} onChange={onInput('invoiceNumber')} />
-              </label>
-              <label>
-                Invoice date
-                <input type="date" value={draft.invoiceDate} onChange={onInput('invoiceDate')} />
-              </label>
-              <label className="span-2">
-                Client / Recipient (To:)
-                <textarea
-                  value={draft.clientInfo}
-                  onChange={onInput('clientInfo')}
-                  rows={3}
-                  placeholder={'Bird LNG Constructors Limited\n102, 17007-107 Ave\nEdmonton, AB, T5S 1G3'}
-                />
-              </label>
-              <label>
-                Project name
-                <input
-                  value={draft.projectName}
-                  onChange={onInput('projectName')}
-                  placeholder="Woodfibre LNG Project"
-                />
-              </label>
-              <label>
-                Project #
-                <input
-                  value={draft.projectNumber}
-                  onChange={onInput('projectNumber')}
-                  placeholder="71055"
-                />
-              </label>
-              <label>
-                Phase code
-                <input
-                  value={draft.phaseCode}
-                  onChange={onInput('phaseCode')}
-                  placeholder="00.00.12.00.0000"
-                />
-              </label>
-              <label>
-                Hourly rate ($)
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={draft.hourlyRate}
-                  onChange={onNumberInput('hourlyRate')}
-                />
-              </label>
-              <label>
-                LOA / day ($)
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={draft.loaPerDay}
-                  onChange={onNumberInput('loaPerDay')}
-                />
-              </label>
-              <label>
-                GST rate
-                <select value={draft.gstRate} onChange={onNumberInput('gstRate')}>
-                  <option value={0}>0% (no GST)</option>
-                  <option value={0.05}>5% (GST)</option>
-                </select>
-              </label>
-            </div>
-
-            {/* ── BILLING PERIOD + ENTRIES ── */}
-            <div className="period-header">
-              <div>
-                <h3>Billing period &amp; hours</h3>
-                <p>Rows auto-generate for each day. Enter hours worked per day.</p>
-              </div>
-              <div className="period-dates">
-                <label>
-                  From
-                  <input
-                    type="date"
-                    value={draft.periodFrom}
-                    onChange={(e) => updatePeriod('periodFrom', e.target.value)}
-                  />
-                </label>
-                <label>
-                  To
-                  <input
-                    type="date"
-                    value={draft.periodTo}
-                    onChange={(e) => updatePeriod('periodTo', e.target.value)}
-                  />
-                </label>
-              </div>
-            </div>
-
-            <div className="entries-wrap">
-              <table className="entries-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Hours</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {draft.entries.map((entry, i) => {
-                    const loa = entry.hours > 0 ? draft.loaPerDay : 0;
-                    const amt = entry.hours * draft.hourlyRate + loa;
-                    return (
-                      <tr key={entry.date} className={entry.hours === 0 ? 'zero-row' : ''}>
-                        <td className="date-cell">{fmtDisplayDate(entry.date)}</td>
-                        <td>
-                          <input
-                            value={entry.description}
-                            onChange={(e) => updateEntry(i, 'description', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            value={entry.hours}
-                            onChange={(e) => updateEntry(i, 'hours', Number(e.target.value))}
-                          />
-                        </td>
-                        <td className="amt-cell">
-                          {amt > 0 ? fmtCurrency(amt) : '—'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="entries-total-row">
-                    <td colSpan={2}>Total</td>
-                    <td>{totalHours} hrs</td>
-                    <td className="amt-cell">{fmtCurrency(subtotal)}</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </form>
-
-          {/* ── PREVIEW ── */}
           <aside className="preview-card">
             <p className="eyebrow">Summary</p>
-            <h3>{draft.invoiceNumber}</h3>
-
+            <h3>{draft.invoiceNumber || '—'}</h3>
             <dl className="preview-details">
-              <div>
-                <dt>Client</dt>
-                <dd>{draft.clientInfo.split('\n')[0] || '—'}</dd>
-              </div>
-              <div>
-                <dt>Project</dt>
-                <dd>{draft.projectName || '—'}</dd>
-              </div>
-              <div>
-                <dt>Project #</dt>
-                <dd>{draft.projectNumber || '—'}</dd>
-              </div>
-              <div>
-                <dt>Phase code</dt>
-                <dd>{draft.phaseCode || '—'}</dd>
-              </div>
+              <div><dt>Client</dt><dd>{draft.clientInfo.split('\n')[0] || '—'}</dd></div>
+              <div><dt>Project</dt><dd>{draft.projectName || '—'}</dd></div>
+              <div><dt>Project #</dt><dd>{draft.projectNumber || '—'}</dd></div>
+              <div><dt>Phase code</dt><dd>{draft.phaseCode || '—'}</dd></div>
               <div>
                 <dt>Period</dt>
-                <dd>
-                  {draft.periodFrom && draft.periodTo
-                    ? `${fmtDisplayDate(draft.periodFrom)} → ${fmtDisplayDate(draft.periodTo)}`
-                    : '—'}
-                </dd>
+                <dd>{draft.periodFrom && draft.periodTo
+                  ? `${fmtDisplayDate(draft.periodFrom)} → ${fmtDisplayDate(draft.periodTo)}`
+                  : '—'}</dd>
               </div>
               <div>
                 <dt>Days / Hours</dt>
-                <dd>
-                  {draft.entries.filter((e) => e.hours > 0).length} days · {totalHours} hrs
-                </dd>
+                <dd>{draft.entries.filter((e) => e.hours > 0).length} days · {totalHours} hrs</dd>
               </div>
             </dl>
-
             <div className="totals-block">
-              <div className="totals-row">
-                <span>Subtotal</span>
-                <strong>{fmtCurrency(subtotal)}</strong>
-              </div>
-              <div className="totals-row">
-                <span>GST ({(draft.gstRate * 100).toFixed(0)}%)</span>
-                <strong>{fmtCurrency(gst)}</strong>
-              </div>
-              <div className="totals-row total-row">
-                <span>Total</span>
-                <strong>{fmtCurrency(total)}</strong>
-              </div>
+              <div className="totals-row"><span>Subtotal</span><strong>{fmtCurrency(subtotal)}</strong></div>
+              <div className="totals-row"><span>GST ({(draft.gstRate * 100).toFixed(0)}%)</span><strong>{fmtCurrency(gst)}</strong></div>
+              <div className="totals-row total-row"><span>Total</span><strong>{fmtCurrency(total)}</strong></div>
             </div>
-
-            <button className="primary-button full-width" onClick={exportPdf} type="button">
-              Export PDF
-            </button>
+            <button className="primary-button full-width" onClick={exportPdf} type="button">Export PDF</button>
           </aside>
         </section>
+
+        {/* Mobile sticky action bar */}
+        <div className="mobile-action-bar">
+          <div className="mobile-total">{fmtCurrency(total)}</div>
+          <div className="mobile-action-btns">
+            <button className="secondary-button" onClick={saveCurrentInvoice} type="button">Save</button>
+            <button className="primary-button" onClick={exportPdf} type="button">Export PDF</button>
+          </div>
+        </div>
       </main>
     </div>
   );

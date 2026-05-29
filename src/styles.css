@@ -307,6 +307,50 @@ button { cursor: pointer; }
 
 .field-grid textarea { resize: vertical; }
 
+/* ── INVOICE NUMBER SPLIT FIELD ──────────────────────────────────────── */
+
+.inv-num-row {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #d5dcee;
+  border-radius: 12px;
+  padding: 0 13px;
+  min-height: 48px;
+  gap: 4px;
+}
+
+.inv-prefix-input {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: unset !important;
+  border-radius: 0 !important;
+  width: 80px;
+  font-weight: 700;
+  color: #172033;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.inv-prefix-input::placeholder {
+  color: rgba(23, 32, 51, 0.2);
+  font-weight: 400;
+}
+
+.inv-num-sep {
+  color: #b0bcd4;
+  font-weight: 700;
+  user-select: none;
+}
+
+.inv-num-rest {
+  color: #60708f;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  user-select: none;
+}
+
 /* ── PERIOD HEADER ───────────────────────────────────────────────────── */
 
 .period-header {

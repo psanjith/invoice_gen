@@ -231,13 +231,36 @@ function App() {
     setStatus('PDF export started.');
   }
 
+  const dashIdx = draft.invoiceNumber.indexOf('-');
+  const invPrefix = dashIdx >= 0 ? draft.invoiceNumber.slice(0, dashIdx) : draft.invoiceNumber;
+  const invSuffix = dashIdx >= 0 ? draft.invoiceNumber.slice(dashIdx + 1) : '';
+
+  function updatePrefix(raw: string) {
+    const p = raw.toUpperCase();
+    setField('invoiceNumber', invSuffix ? `${p}-${invSuffix}` : p);
+  }
+
   const formContent = (
     <form className="editor-card" onSubmit={(e) => e.preventDefault()}>
       <h3 className="section-heading">Invoice details</h3>
       <div className="field-grid">
         <label>
           Invoice number
-          <input value={draft.invoiceNumber} onChange={onInput('invoiceNumber')} />
+          <div className="inv-num-row">
+            <input
+              className="inv-prefix-input"
+              value={invPrefix === 'XXXX' ? '' : invPrefix}
+              placeholder="XXXX"
+              onChange={(e) => updatePrefix(e.target.value)}
+              maxLength={10}
+            />
+            {invSuffix && (
+              <>
+                <span className="inv-num-sep">-</span>
+                <span className="inv-num-rest">{invSuffix}</span>
+              </>
+            )}
+          </div>
         </label>
         <label>
           Invoice date

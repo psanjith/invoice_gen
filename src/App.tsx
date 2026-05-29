@@ -504,17 +504,10 @@ function App() {
             return (
               <div key={inv.id} className={inv.id === activeId ? 'saved-item active' : 'saved-item'}>
                 <button className="saved-item-main" onClick={() => loadInvoice(inv.id)} type="button">
-                  <div className="saved-item-row">
-                    <strong>{inv.invoiceNumber}</strong>
-                    <span className="saved-item-amount">{fmtCurrency(invTotal)}</span>
-                  </div>
-                  <span>{inv.projectName || 'No project'}</span>
-                  <small>{inv.clientInfo.split('\n')[0] || 'No client'}</small>
+                  <strong>{inv.invoiceNumber}</strong>
+                  <span className="saved-item-amount">{fmtCurrency(invTotal)}</span>
                 </button>
-                <div className="saved-item-actions">
-                  <button type="button" onClick={() => duplicateSaved(inv.id)}>Copy</button>
-                  <button type="button" onClick={() => deleteSaved(inv.id)}>Delete</button>
-                </div>
+                <button className="delete-btn" type="button" onClick={() => deleteSaved(inv.id)}>✕</button>
               </div>
             );
           })}

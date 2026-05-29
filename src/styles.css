@@ -132,11 +132,11 @@ button { cursor: pointer; }
 }
 
 .saved-item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  align-items: center;
   gap: 8px;
-  padding: 14px;
-  border-radius: 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(170, 182, 214, 0.12);
 }
@@ -147,51 +147,44 @@ button { cursor: pointer; }
 }
 
 .saved-item-main {
-  display: grid;
-  gap: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
   text-align: left;
-  min-height: 44px;
+  min-height: 36px;
 }
 
-.saved-item-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+.saved-item-main strong {
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .saved-item-amount {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #7da0ff;
+  white-space: nowrap;
 }
 
-.saved-item span,
-.saved-item small {
-  color: rgba(244, 247, 255, 0.6);
-  font-size: 0.82rem;
+.delete-btn {
+  background: none;
+  border: none;
+  color: rgba(244, 247, 255, 0.35);
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 160ms ease;
 }
 
-.saved-item strong { font-size: 0.95rem; }
-
-.saved-item-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.saved-item-actions button {
-  padding: 7px 10px;
-  border: 1px solid rgba(213, 220, 238, 0.2);
-  border-radius: 10px;
-  background: rgba(230, 235, 255, 0.9);
-  color: #21316a;
-  font-weight: 700;
-  font-size: 0.78rem;
+.delete-btn:hover {
+  color: rgba(255, 80, 80, 0.8);
 }
 
 .empty-state {
@@ -763,26 +756,15 @@ button { cursor: pointer; }
 
   /* Sidebar list improvements for mobile */
   .saved-item {
-    padding: 16px;
-    border-radius: 14px;
+    padding: 12px 14px;
   }
 
-  .saved-item-main {
-    min-height: 56px;
-  }
+  .saved-item-main strong { font-size: 0.95rem; }
+  .saved-item-amount { font-size: 0.92rem; }
 
-  .saved-item strong { font-size: 1rem; }
-  .saved-item span { font-size: 0.88rem; }
-
-  .saved-item-actions {
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .saved-item-actions button {
-    padding: 10px 12px;
-    font-size: 0.82rem;
-    min-height: 40px;
+  .delete-btn {
+    font-size: 1rem;
+    padding: 6px 8px;
   }
 
   .search-field input {

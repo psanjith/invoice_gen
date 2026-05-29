@@ -301,18 +301,19 @@ function App() {
         </label>
         <label className="span-2">
           Client / Recipient (To:)
-          {savedClients.length > 0 && (
-            <select
-              className="client-dropdown"
-              value=""
-              onChange={(e) => { if (e.target.value) setField('clientInfo', e.target.value); }}
-            >
-              <option value="">Select saved client…</option>
-              {savedClients.map((c) => (
-                <option key={c} value={c}>{c.split('\n')[0]}</option>
-              ))}
-            </select>
-          )}
+          <select
+            className="client-dropdown"
+            value=""
+            onChange={(e) => { if (e.target.value) setField('clientInfo', e.target.value); }}
+            disabled={savedClients.length === 0}
+          >
+            <option value="">
+              {savedClients.length === 0 ? 'No saved clients yet' : 'Select saved client…'}
+            </option>
+            {savedClients.map((c) => (
+              <option key={c} value={c}>{c.split('\n')[0]}</option>
+            ))}
+          </select>
           <textarea
             value={draft.clientInfo}
             onChange={onInput('clientInfo')}

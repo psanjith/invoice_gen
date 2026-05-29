@@ -507,7 +507,15 @@ function App() {
                   <strong>{inv.invoiceNumber}</strong>
                   <span className="saved-item-amount">{fmtCurrency(invTotal)}</span>
                 </button>
-                <button className="delete-btn" type="button" onClick={() => deleteSaved(inv.id)}>✕</button>
+                <button
+                  className="delete-btn"
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`Delete ${inv.invoiceNumber}? This cannot be undone.`)) {
+                      deleteSaved(inv.id);
+                    }
+                  }}
+                >✕</button>
               </div>
             );
           })}

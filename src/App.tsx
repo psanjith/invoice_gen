@@ -115,6 +115,14 @@ function App() {
       .filter((c) => { if (!c || seen.has(c)) return false; seen.add(c); return true; });
   }, [invoices]);
 
+  const savedProjects = useMemo(() => {
+    const seen = new Set<string>();
+    return invoices
+      .filter((inv) => inv.projectName.trim())
+      .filter((inv) => { if (seen.has(inv.projectName.trim())) return false; seen.add(inv.projectName.trim()); return true; })
+      .map((inv) => ({ name: inv.projectName.trim(), number: inv.projectNumber.trim() }));
+  }, [invoices]);
+
   const totalHours = draft.entries.reduce((s, e) => s + e.hours, 0);
   const subtotal = draft.entries.reduce((s, e) => {
     const loa = e.hours > 0 ? draft.loaPerDay : 0;
@@ -333,8 +341,26 @@ function App() {
             placeholder={'Bird LNG Constructors Limited\n102, 17007-107 Ave\nEdmonton, AB, T5S 1G3'}
           />
         </label>
-        <label>
+        <label className="span-2">
           Project name
+          <select
+            className="client-dropdown"
+            value=""
+            onChange={(e) => {
+              const selected = savedProjects.find((p) => p.name === e.target.value);
+              if (!selected) return;
+              setDraft((cur) => ({ ...cur, projectName: selected.name, projectNumber: selected.number }));
+              if (exportErrors.length > 0) setExportErrors([]);
+            }}
+            disabled={savedProjects.length === 0}
+          >
+            <option value="">
+              {savedProjects.length === 0 ? 'No saved projects yet' : 'Select saved project…'}
+            </option>
+            {savedProjects.map((p) => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </select>
           <input value={draft.projectName} onChange={onInput('projectName')} placeholder="Woodfibre LNG Project" />
         </label>
         <label>

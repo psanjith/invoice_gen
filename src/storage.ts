@@ -102,9 +102,6 @@ export function nextInvoiceNumber(existing: Invoice[]): string {
     return match ? Math.max(max, parseInt(match[1], 10)) : max;
   }, 0);
   const next = maxSeq + 1;
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}${day}-${String(next).padStart(4, '0')}`;
+  const year = new Date().getFullYear();
+  return `${year}-${String(next).padStart(4, '0')}`;
 }

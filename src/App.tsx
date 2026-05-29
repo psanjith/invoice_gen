@@ -124,9 +124,17 @@ function App() {
       setField(field, e.target.value as Invoice[typeof field]);
   }
 
-  function onNumberInput(field: keyof Invoice) {
-    return (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-      setField(field, Number(e.target.value) as Invoice[typeof field]);
+  function numericProps(value: number, onChange: (n: number) => void, isInt = false) {
+    return {
+      type: 'text' as const,
+      inputMode: (isInt ? 'numeric' : 'decimal') as 'numeric' | 'decimal',
+      value: value === 0 ? '' : String(value),
+      placeholder: '0',
+      onChange: (e: ChangeEvent<HTMLInputElement>) => {
+        const parsed = isInt ? parseInt(e.target.value, 10) : parseFloat(e.target.value);
+        onChange(isNaN(parsed) ? 0 : parsed);
+      },
+    };
   }
 
   function updatePeriod(field: 'periodFrom' | 'periodTo', value: string) {
@@ -258,15 +266,15 @@ function App() {
         </label>
         <label>
           Hourly rate ($)
-          <input type="number" min="0" step="0.01" value={draft.hourlyRate} onChange={onNumberInput('hourlyRate')} />
+          <input {...numericProps(draft.hourlyRate, (n) => setField('hourlyRate', n))} />
         </label>
         <label>
           LOA / day ($)
-          <input type="number" min="0" step="0.01" value={draft.loaPerDay} onChange={onNumberInput('loaPerDay')} />
+          <input {...numericProps(draft.loaPerDay, (n) => setField('loaPerDay', n))} />
         </label>
         <label>
           GST rate
-          <select value={draft.gstRate} onChange={onNumberInput('gstRate')}>
+          <select value={draft.gstRate} onChange={(e) => setField('gstRate', Number(e.target.value))}>
             <option value={0}>0% (no GST)</option>
             <option value={0.05}>5% (GST)</option>
           </select>
@@ -308,11 +316,7 @@ function App() {
                   <td className="date-cell">{fmtDisplayDate(entry.date)}</td>
                   <td>
                     <input
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      value={entry.hours}
-                      onChange={(e) => updateEntry(i, 'hours', Number(e.target.value))}
+                      {...numericProps(entry.hours, (n) => updateEntry(i, 'hours', n), true)}
                     />
                   </td>
                   <td className="amt-cell">{amt > 0 ? fmtCurrency(amt) : '—'}</td>

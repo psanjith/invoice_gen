@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { exportInvoiceToPdf } from './pdf';
+import { exportSummarySpreadsheet } from './spreadsheet';
 import {
   duplicateInvoice,
   loadInvoices,
@@ -458,6 +459,15 @@ function App() {
         <label className="search-field">
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search invoices…" />
         </label>
+
+        <button
+          className="summary-export-btn"
+          type="button"
+          onClick={() => void exportSummarySpreadsheet(invoices)}
+          disabled={invoices.length === 0}
+        >
+          Export summary ↓
+        </button>
 
         <div className="saved-list">
           {filteredInvoices.map((inv) => {

@@ -514,6 +514,29 @@ button { cursor: pointer; }
 
 .total-row strong { font-size: 1.2rem; }
 
+/* ── SUMMARY EXPORT BUTTON ───────────────────────────────────────────── */
+
+.summary-export-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(213, 220, 238, 0.22);
+  border-radius: 12px;
+  color: rgba(244, 247, 255, 0.8);
+  padding: 11px 14px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-align: left;
+  transition: background 160ms ease;
+}
+
+.summary-export-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.summary-export-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 /* ── CLIENT DROPDOWN ─────────────────────────────────────────────────── */
 
 .client-dropdown {

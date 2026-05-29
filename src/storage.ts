@@ -103,5 +103,5 @@ export function nextInvoiceNumber(existing: Invoice[]): string {
   }, 0);
   const next = maxSeq + 1;
   const year = new Date().getFullYear();
-  return `${year}-${String(next).padStart(4, '0')}`;
+  return `XXXX-${year}-${String(next).padStart(4, '0')}`;
 }

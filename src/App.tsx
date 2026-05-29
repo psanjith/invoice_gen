@@ -304,7 +304,18 @@ function App() {
           <select
             className="client-dropdown"
             value=""
-            onChange={(e) => { if (e.target.value) setField('clientInfo', e.target.value); }}
+            onChange={(e) => {
+              const clientInfo = e.target.value;
+              if (!clientInfo) return;
+              const match = invoices.find((inv) => inv.clientInfo === clientInfo);
+              setDraft((cur) => ({
+                ...cur,
+                clientInfo,
+                phaseCode: match?.phaseCode ?? cur.phaseCode,
+                projectNumber: match?.projectNumber ?? cur.projectNumber,
+              }));
+              if (exportErrors.length > 0) setExportErrors([]);
+            }}
             disabled={savedClients.length === 0}
           >
             <option value="">

@@ -45,7 +45,7 @@ function createBlankInvoice(invoiceNumber = ''): Invoice {
     periodTo: today,
     hourlyRate: 0,
     loaPerDay: 0,
-    gstRate: 0,
+    gstRate: 0.05,
     entries: [{ date: today, hours: 0, description: 'Straight' }],
     createdAt: now,
     updatedAt: now,

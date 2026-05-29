@@ -117,6 +117,7 @@ function App() {
 
   function setField<K extends keyof Invoice>(field: K, value: Invoice[K]) {
     setDraft((cur) => ({ ...cur, [field]: value }));
+    if (exportErrors.length > 0) setExportErrors([]);
   }
 
   function onInput(field: keyof Invoice) {
@@ -226,7 +227,32 @@ function App() {
       .catch(() => setStatus('Delete failed.'));
   }
 
+  const [exportErrors, setExportErrors] = useState<string[]>([]);
+
+  function validateInvoice(inv: Invoice): string[] {
+    const errors: string[] = [];
+    const dashIdx = inv.invoiceNumber.indexOf('-');
+    const prefix = dashIdx >= 0 ? inv.invoiceNumber.slice(0, dashIdx) : inv.invoiceNumber;
+    if (!prefix || prefix === 'XXXX') errors.push('Invoice prefix (replace XXXX with client code)');
+    if (!inv.invoiceDate) errors.push('Invoice date');
+    if (!inv.clientInfo.trim()) errors.push('Client / Recipient info');
+    if (!inv.phaseCode.trim()) errors.push('Phase code');
+    if (!inv.projectName.trim()) errors.push('Project name');
+    if (!inv.projectNumber.trim()) errors.push('Project #');
+    if (!inv.periodFrom) errors.push('Period start date');
+    if (!inv.periodTo) errors.push('Period end date');
+    if (!inv.hourlyRate || inv.hourlyRate <= 0) errors.push('Hourly rate');
+    if (!inv.entries.some((e) => e.hours > 0)) errors.push('At least one day with hours entered');
+    return errors;
+  }
+
   function exportPdf() {
+    const errors = validateInvoice(draft);
+    if (errors.length > 0) {
+      setExportErrors(errors);
+      return;
+    }
+    setExportErrors([]);
     void exportInvoiceToPdf(draft);
     setStatus('PDF export started.');
   }
@@ -371,6 +397,15 @@ function App() {
           <strong>{fmtCurrency(total)}</strong>
         </div>
       </div>
+
+      {exportErrors.length > 0 && (
+        <div className="validation-errors">
+          <p className="validation-title">Complete these fields before exporting:</p>
+          <ul>
+            {exportErrors.map((err) => <li key={err}>{err}</li>)}
+          </ul>
+        </div>
+      )}
     </form>
   );
 

@@ -410,6 +410,7 @@ function App() {
           <thead>
             <tr>
               <th>Date</th>
+              <th>Description</th>
               <th>Hrs</th>
               <th>Amount</th>
             </tr>
@@ -423,6 +424,14 @@ function App() {
                   <td className="date-cell">{fmtDisplayDate(entry.date)}</td>
                   <td>
                     <input
+                      className="desc-input"
+                      value={entry.description}
+                      onChange={(e) => updateEntry(i, 'description', e.target.value)}
+                      placeholder="Straight"
+                    />
+                  </td>
+                  <td>
+                    <input
                       {...numericProps(entry.hours, (n) => updateEntry(i, 'hours', n), true)}
                     />
                   </td>
@@ -434,6 +443,7 @@ function App() {
           <tfoot>
             <tr className="entries-total-row">
               <td>Total</td>
+              <td></td>
               <td>{totalHours} hrs</td>
               <td className="amt-cell">{fmtCurrency(subtotal)}</td>
             </tr>

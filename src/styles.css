@@ -413,6 +413,17 @@ button { cursor: pointer; }
 
 .entries-table tbody tr:last-child td { border-bottom: none; }
 
+.desc-input {
+  width: 100%;
+  min-width: 80px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #d5dcee;
+  background: rgba(255, 255, 255, 0.92);
+  color: #172033;
+  font-size: 0.88rem;
+}
+
 .entries-table td input[type='number'] {
   width: 70px;
   padding: 7px 8px;

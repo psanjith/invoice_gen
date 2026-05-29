@@ -514,6 +514,19 @@ button { cursor: pointer; }
 
 .total-row strong { font-size: 1.2rem; }
 
+/* ── CLIENT DROPDOWN ─────────────────────────────────────────────────── */
+
+.client-dropdown {
+  width: 100%;
+  padding: 10px 13px;
+  border-radius: 12px;
+  border: 1px solid #d5dcee;
+  background: rgba(255, 255, 255, 0.94);
+  color: #172033;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
 /* ── VALIDATION ERRORS ───────────────────────────────────────────────── */
 
 .validation-errors {

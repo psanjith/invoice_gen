@@ -107,6 +107,13 @@ function App() {
     );
   }, [search, sortedInvoices]);
 
+  const savedClients = useMemo(() => {
+    const seen = new Set<string>();
+    return invoices
+      .map((inv) => inv.clientInfo.trim())
+      .filter((c) => { if (!c || seen.has(c)) return false; seen.add(c); return true; });
+  }, [invoices]);
+
   const totalHours = draft.entries.reduce((s, e) => s + e.hours, 0);
   const subtotal = draft.entries.reduce((s, e) => {
     const loa = e.hours > 0 ? draft.loaPerDay : 0;
@@ -294,6 +301,18 @@ function App() {
         </label>
         <label className="span-2">
           Client / Recipient (To:)
+          {savedClients.length > 0 && (
+            <select
+              className="client-dropdown"
+              value=""
+              onChange={(e) => { if (e.target.value) setField('clientInfo', e.target.value); }}
+            >
+              <option value="">Select saved client…</option>
+              {savedClients.map((c) => (
+                <option key={c} value={c}>{c.split('\n')[0]}</option>
+              ))}
+            </select>
+          )}
           <textarea
             value={draft.clientInfo}
             onChange={onInput('clientInfo')}

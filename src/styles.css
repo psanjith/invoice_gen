@@ -337,11 +337,15 @@ button { cursor: pointer; }
   user-select: none;
 }
 
-.inv-num-rest {
+.inv-suffix-input {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: unset !important;
+  border-radius: 0 !important;
   color: #60708f;
   font-size: 0.95rem;
-  white-space: nowrap;
-  user-select: none;
+  width: 80px;
 }
 
 /* ── PERIOD HEADER ───────────────────────────────────────────────────── */

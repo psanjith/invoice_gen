@@ -299,7 +299,11 @@ function App() {
             {invSuffix && (
               <>
                 <span className="inv-num-sep">-</span>
-                <span className="inv-num-rest">{invSuffix}</span>
+                <input
+                  className="inv-suffix-input"
+                  value={invSuffix}
+                  onChange={(e) => setField('invoiceNumber', `${invPrefix}-${e.target.value}`)}
+                />
               </>
             )}
           </div>

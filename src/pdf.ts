@@ -294,7 +294,7 @@ export async function exportInvoiceToPdf(invoice: Invoice): Promise<void> {
   entries.forEach((entry, i) => {
     const ry = bodyTop + i * trH + 14;
     const loa = entry.hours > 0 ? invoice.loaPerDay : 0;
-    const amount = entry.hours * invoice.hourlyRate + loa;
+    const amount = entry.amountOverride != null ? entry.amountOverride : entry.hours * invoice.hourlyRate + loa;
     subtotal += amount;
 
     pdf.text(fmtDate(entry.date), cx.date, ry, { align: 'center' });

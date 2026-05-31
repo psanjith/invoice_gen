@@ -428,6 +428,30 @@ button { cursor: pointer; }
   font-size: 0.88rem;
 }
 
+.amt-calculated {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #172033;
+  white-space: nowrap;
+}
+
+.amt-override-input {
+  margin-top: 3px;
+  width: 90px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px dashed #d5dcee;
+  background: rgba(255, 255, 255, 0.7);
+  color: #172033;
+  font-size: 0.78rem;
+  display: block;
+}
+
+.amt-override-input::placeholder {
+  color: rgba(23, 32, 51, 0.3);
+  font-style: italic;
+}
+
 .entries-table td input[type='number'] {
   width: 70px;
   padding: 7px 8px;

@@ -125,6 +125,7 @@ function App() {
 
   const totalHours = draft.entries.reduce((s, e) => s + e.hours, 0);
   const subtotal = draft.entries.reduce((s, e) => {
+    if (e.amountOverride != null) return s + e.amountOverride;
     const loa = e.hours > 0 ? draft.loaPerDay : 0;
     return s + e.hours * draft.hourlyRate + loa;
   }, 0);
@@ -422,9 +423,10 @@ function App() {
           <tbody>
             {draft.entries.map((entry, i) => {
               const loa = entry.hours > 0 ? draft.loaPerDay : 0;
-              const amt = entry.hours * draft.hourlyRate + loa;
+              const calcAmt = entry.hours * draft.hourlyRate + loa;
+              const amt = entry.amountOverride != null ? entry.amountOverride : calcAmt;
               return (
-                <tr key={entry.date} className={entry.hours === 0 ? 'zero-row' : ''}>
+                <tr key={entry.date} className={entry.hours === 0 && entry.amountOverride == null ? 'zero-row' : ''}>
                   <td className="date-cell">{fmtDisplayDate(entry.date)}</td>
                   <td>
                     <input
@@ -439,7 +441,20 @@ function App() {
                       {...numericProps(entry.hours, (n) => updateEntry(i, 'hours', n), true)}
                     />
                   </td>
-                  <td className="amt-cell">{amt > 0 ? fmtCurrency(amt) : '—'}</td>
+                  <td className="amt-cell">
+                    <div className="amt-calculated">{amt > 0 ? fmtCurrency(amt) : '—'}</div>
+                    <input
+                      className="amt-override-input"
+                      type="text"
+                      inputMode="decimal"
+                      value={entry.amountOverride != null ? String(entry.amountOverride) : ''}
+                      placeholder="Override"
+                      onChange={(e) => {
+                        const parsed = parseFloat(e.target.value);
+                        updateEntry(i, 'amountOverride', e.target.value === '' ? (undefined as unknown as number) : isNaN(parsed) ? 0 : parsed);
+                      }}
+                    />
+                  </td>
                 </tr>
               );
             })}

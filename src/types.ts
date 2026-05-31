@@ -2,6 +2,7 @@ export type DayEntry = {
   date: string;
   hours: number;
   description: string;
+  amountOverride?: number;
 };
 
 export type Invoice = {

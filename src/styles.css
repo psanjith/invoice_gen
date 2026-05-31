@@ -28,10 +28,10 @@ button { cursor: pointer; }
 .secondary-button,
 .ghost-button {
   border: 0;
-  border-radius: 14px;
-  padding: 12px 20px;
+  border-radius: 12px;
+  padding: 8px 16px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   transition: transform 160ms ease, box-shadow 160ms ease;
   white-space: nowrap;
 }
@@ -55,7 +55,7 @@ button { cursor: pointer; }
 .primary-button:hover,
 .secondary-button:hover { transform: translateY(-1px); }
 
-.full-width { width: 100%; margin-top: 18px; }
+.full-width { width: 100%; margin-top: 10px; }
 
 /* ── SHELL ───────────────────────────────────────────────────────────── */
 
@@ -70,8 +70,8 @@ button { cursor: pointer; }
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 24px;
+  gap: 10px;
+  padding: 16px;
   background: rgba(13, 19, 34, 0.92);
   color: #f4f7ff;
 }
@@ -200,9 +200,9 @@ button { cursor: pointer; }
 /* ── WORKSPACE ───────────────────────────────────────────────────────── */
 
 .workspace {
-  padding: 26px;
+  padding: 14px;
   display: grid;
-  gap: 20px;
+  gap: 10px;
   align-content: start;
 }
 
@@ -216,18 +216,18 @@ button { cursor: pointer; }
 .hero-panel {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  border-radius: 26px;
-  padding: 22px 26px;
+  align-items: center;
+  gap: 16px;
+  border-radius: 18px;
+  padding: 12px 18px;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(18px);
   border: 1px solid rgba(170, 182, 214, 0.22);
   box-shadow: 0 20px 60px rgba(35, 44, 79, 0.1);
 }
 
-.hero-panel h2 { margin: 0 0 4px; font-size: 1.5rem; }
-.hero-panel p { margin: 0; color: #505b75; font-size: 0.88rem; }
+.hero-panel h2 { margin: 0 0 2px; font-size: 1.15rem; }
+.hero-panel p { margin: 0; color: #505b75; font-size: 0.8rem; }
 
 .hero-actions {
   display: flex;
@@ -240,8 +240,8 @@ button { cursor: pointer; }
 
 .content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) 300px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.4fr) 280px;
+  gap: 10px;
   align-items: start;
 }
 
@@ -253,8 +253,8 @@ button { cursor: pointer; }
   backdrop-filter: blur(18px);
   border: 1px solid rgba(170, 182, 214, 0.22);
   box-shadow: 0 20px 60px rgba(35, 44, 79, 0.1);
-  border-radius: 26px;
-  padding: 22px;
+  border-radius: 18px;
+  padding: 14px;
 }
 
 .preview-card {
@@ -264,8 +264,8 @@ button { cursor: pointer; }
 }
 
 .section-heading {
-  margin: 0 0 16px;
-  font-size: 1rem;
+  margin: 0 0 10px;
+  font-size: 0.9rem;
   color: #1a2340;
 }
 
@@ -274,13 +274,13 @@ button { cursor: pointer; }
 .field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 8px;
 }
 
 .field-grid label {
   display: grid;
-  gap: 7px;
-  font-size: 0.88rem;
+  gap: 4px;
+  font-size: 0.82rem;
   color: #4e5a76;
 }
 
@@ -290,12 +290,12 @@ button { cursor: pointer; }
 .field-grid select,
 .field-grid textarea {
   width: 100%;
-  padding: 11px 13px;
-  border-radius: 12px;
+  padding: 7px 10px;
+  border-radius: 8px;
   border: 1px solid #d5dcee;
   background: rgba(255, 255, 255, 0.94);
   color: #172033;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .field-grid textarea { resize: vertical; }
@@ -307,9 +307,9 @@ button { cursor: pointer; }
   align-items: center;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid #d5dcee;
-  border-radius: 12px;
-  padding: 0 13px;
-  min-height: 48px;
+  border-radius: 8px;
+  padding: 0 10px;
+  min-height: 34px;
   gap: 4px;
 }
 
@@ -349,13 +349,13 @@ button { cursor: pointer; }
 .period-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin: 22px 0 14px;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 8px;
 }
 
-.period-header h3 { margin: 0; font-size: 1rem; }
-.period-header p { margin: 4px 0 0; color: #60708f; font-size: 0.82rem; }
+.period-header h3 { margin: 0; font-size: 0.9rem; }
+.period-header p { margin: 2px 0 0; color: #60708f; font-size: 0.78rem; }
 
 .period-dates {
   display: flex;
@@ -371,12 +371,12 @@ button { cursor: pointer; }
 }
 
 .period-dates input {
-  padding: 9px 11px;
-  border-radius: 11px;
+  padding: 6px 8px;
+  border-radius: 8px;
   border: 1px solid #d5dcee;
   background: rgba(255, 255, 255, 0.94);
   color: #172033;
-  font-size: 1rem;
+  font-size: 0.88rem;
 }
 
 /* ── ENTRIES TABLE ───────────────────────────────────────────────────── */
@@ -395,9 +395,9 @@ button { cursor: pointer; }
 
 .entries-table th {
   text-align: left;
-  padding: 10px 14px;
+  padding: 6px 10px;
   background: rgba(241, 244, 251, 0.95);
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: #4e5a76;
@@ -406,7 +406,7 @@ button { cursor: pointer; }
 }
 
 .entries-table td {
-  padding: 6px 14px;
+  padding: 3px 10px;
   border-bottom: 1px solid rgba(111, 123, 147, 0.1);
   vertical-align: middle;
 }
@@ -458,7 +458,7 @@ button { cursor: pointer; }
 }
 
 .entries-table tfoot td {
-  padding: 10px 14px;
+  padding: 5px 10px;
   font-weight: 700;
   color: #1a2340;
   border-bottom: none;
@@ -471,8 +471,8 @@ button { cursor: pointer; }
 .preview-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 18px 0;
+  gap: 8px;
+  margin: 10px 0;
 }
 
 .preview-details dt {
@@ -492,16 +492,16 @@ button { cursor: pointer; }
 .totals-block {
   display: grid;
   border-top: 1px solid rgba(170, 182, 214, 0.3);
-  padding-top: 14px;
-  margin-top: 20px;
+  padding-top: 8px;
+  margin-top: 10px;
 }
 
 .totals-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 0;
-  font-size: 0.92rem;
+  padding: 4px 0;
+  font-size: 0.85rem;
   color: #505b75;
   border-bottom: 1px solid rgba(170, 182, 214, 0.14);
 }
